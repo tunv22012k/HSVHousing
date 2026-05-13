@@ -1,0 +1,65 @@
+﻿@model HSVHousing.Models.ListingFormViewModel
+
+@{
+    ViewBag.Title = "Đăng tin cho thuê mới";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="create-listing-form-card">
+        <h2 class="text-center mb-4">@ViewBag.Title</h2>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="mb-3">
+                @Html.LabelFor(model => model.Title, new { @class = "form-label" })
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    @Html.LabelFor(model => model.CategoryID, new { @class = "form-label" })
+                    @Html.DropDownListFor(model => model.CategoryID, Model.CategoryList, "Chọn loại nhà trọ", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-6 mb-3">
+                    @Html.LabelFor(model => model.WardID, new { @class = "form-label" })
+                    @Html.DropDownListFor(model => model.WardID, Model.WardList, "Chọn phường/xã", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.WardID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(model => model.AddressStreet, new { @class = "form-label" })
+                @Html.EditorFor(model => model.AddressStreet, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.AddressStreet, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    @Html.LabelFor(model => model.Price, new { @class = "form-label" })
+                    @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-6 mb-3">
+                    @Html.LabelFor(model => model.Area, new { @class = "form-label" })
+                    @Html.EditorFor(model => model.Area, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Area, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(model => model.Description, new { @class = "form-label" })
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 6 })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="text-center mt-4">
+                <input type="submit" value="Gửi duyệt" class="btn btn-primary-cta btn-lg" />
+            </div>
+        }
+    </div>
+</div>

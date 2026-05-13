@@ -1,0 +1,121 @@
+﻿@model PagedList.IPagedList<HSVHousing.Models.Listing>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Tìm kiếm Nhà trọ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main>
+    <section class="container my-5">
+        <h2 class="h3 mb-4 section-title text-center">Kết quả tìm kiếm</h2>
+
+        @* --- BỘ LỌC --- *@
+        @using (Html.BeginForm("Index", "Listing", FormMethod.Get, new { @class = "search-panel mb-5" }))
+        {
+            <div class="search-bar-full-width">
+                @Html.DropDownList("districtId", ViewBag.Districts as SelectList, "Chọn Quận/Huyện", new { @class = "form-select custom-select", id = "districtSelect" })
+
+                <select class="form-select custom-select" id="wardSelect" name="wardId">
+                    <option value="">Chọn Phường/Xã</option>
+                </select>
+
+                <select class="form-select custom-select" name="priceRange">
+                    <option value="">Chọn Khoảng giá</option>
+                    <option value="1-2" @(ViewBag.SelectedPrice == "1-2" ? "selected" : "")>Dưới 2 triệu</option>
+                    <option value="2-3" @(ViewBag.SelectedPrice == "2-3" ? "selected" : "")>2 - 3 triệu</option>
+                    <option value="3-5" @(ViewBag.SelectedPrice == "3-5" ? "selected" : "")>3 - 5 triệu</option>
+                    <option value="5+" @(ViewBag.SelectedPrice == "5+" ? "selected" : "")>Trên 5 triệu</option>
+                </select>
+
+                <select class="form-select custom-select" name="areaRange">
+                    <option value="">Diện tích</option>
+                    <option value="15-20" @(ViewBag.SelectedArea == "15-20" ? "selected" : "")>15 - 20 m²</option>
+                    <option value="20-25" @(ViewBag.SelectedArea == "20-25" ? "selected" : "")>20 - 25 m²</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary-cta search-btn-full-width">
+                    <i class="fas fa-search me-2"></i>TÌM KIẾM
+                </button>
+            </div>
+        }
+
+
+        @* --- LƯỚI TIN ĐĂNG --- *@
+        @if (Model.Any())
+        {
+            <div class="listing-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="listing-card">
+                        <a href="@Url.Action("Details", "Listing", new { id = item.ListingID })" class="listing-card-link">
+                            <div class="listing-card-img-wrapper">
+                                @{
+                                    var primaryImage = item.ListingImages.FirstOrDefault(i => i.IsPrimary)?.ImagePath
+                                                    ?? item.ListingImages.FirstOrDefault()?.ImagePath
+                                                    ?? "~/Content/assets/img/placeholder.png";
+                                }
+                                <img src="@Url.Content(primaryImage)" alt="@item.Title">
+                                <div class="listing-card-tags">
+                                    @if (item.Status == 1)
+                                    {
+                                        <span class="tag tag-available">Còn phòng</span> }
+                                    else if (item.Status == 3)
+                                    {
+                                        <span class="tag tag-rented">Đã cho thuê</span>}
+                                </div>
+                            </div>
+                            <div class="listing-card-body">
+                                <h4 class="h5 listing-title">@item.Title</h4>
+                                <div class="listing-amenities">
+                                    @if (item.MaxOccupancy.HasValue && item.MaxOccupancy > 0)
+                                    {
+                                        <span><i class="fas fa-user-friends"></i> @item.MaxOccupancy Người</span>
+                                    }
+
+                                    @if (item.Amenities != null && item.Amenities.Any())
+                                    {
+                                        foreach (var amenity in item.Amenities.Take(5))
+                                        {
+                                            <span><i class="fas @(amenity.IconClass ?? "fa-check-circle")"></i> @amenity.AmenityName</span>}
+                                    }
+                                </div>
+                                <p class="listing-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    @item.AddressStreet, @(item.Ward?.WardName), @(item.Ward?.District?.DistrictName)
+                                </p>
+                            </div>
+                            <div class="listing-card-footer">
+                                <span class="listing-price">Giá: @item.Price.ToString("N0") đ</span>
+                                <span class="btn btn-detail-red">CHI TIẾT</span>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+
+            @* --- ĐIỀU KHIỂN PHÂN TRANG --- *@
+            <div class="pagination-controls text-center mt-5">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page, districtId = ViewBag.SelectedDistrict, priceRange = ViewBag.SelectedPrice, areaRange = ViewBag.SelectedArea }),
+                    new PagedListRenderOptions
+                    {
+                        ContainerDivClasses = new[] { "d-flex", "justify-content-center" },
+                        LiElementClasses = new[] { "page-item" },
+                        UlElementClasses = new[] { "pagination" },
+                        LinkToPreviousPageFormat = "‹",
+                        LinkToNextPageFormat = "›",
+                        DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                        DisplayLinkToLastPage = PagedListDisplayMode.Never
+                    })
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <p class="h5">Không tìm thấy phòng trọ nào phù hợp.</p>
+                <p class="text-secondary">Vui lòng thử lại với các tiêu chí lọc khác.</p>
+            </div>
+        }
+
+    </section>
+</main>

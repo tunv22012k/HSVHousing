@@ -1,0 +1,57 @@
+﻿@model HSVHousing.Models.RoommatePost
+
+@{
+    ViewBag.Title = "Đăng tin tìm bạn ở ghép";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="create-listing-form-card">
+                <h2 class="text-center mb-4">@ViewBag.Title</h2>
+                <p class="text-center text-secondary mb-4">Chia sẻ thông tin của bạn để tìm được người bạn cùng phòng lý tưởng.</p>
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.Title, "Tiêu đề tin đăng*", new { @class = "form-label text-body-medium" })
+                        @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", placeholder = "Ví dụ: Nam sinh viên năm 2 tìm bạn ở ghép khu vực Cầu Giấy" } })
+                        @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.Content, "Nội dung*", new { @class = "form-label text-body-medium" })
+                        @Html.TextAreaFor(model => model.Content, new { @class = "form-control", rows = 6, placeholder = "Mô tả về bản thân, thói quen sinh hoạt và yêu cầu đối với bạn cùng phòng..." })
+                        @Html.ValidationMessageFor(model => model.Content, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            @Html.LabelFor(model => model.DesiredArea, "Khu vực mong muốn", new { @class = "form-label text-body-medium" })
+                            @Html.EditorFor(model => model.DesiredArea, new { htmlAttributes = new { @class = "form-control", placeholder = "Ví dụ: Quận Cầu Giấy, gần đường Xuân Thủy" } })
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            @Html.LabelFor(model => model.GenderPreference, "Giới tính bạn cùng phòng", new { @class = "form-label text-body-medium" })
+                            @Html.DropDownListFor(model => model.GenderPreference, new SelectList(new[] { "Không yêu cầu", "Nam", "Nữ" }), "Chọn giới tính", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.ContactInfo, "Thông tin liên hệ* (SĐT/Zalo)", new { @class = "form-label text-body-medium" })
+                        @Html.EditorFor(model => model.ContactInfo, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.ContactInfo, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <input type="submit" value="Đăng tin" class="btn btn-primary-cta btn-lg" />
+                        @Html.ActionLink("Hủy", "Index", null, new { @class = "btn btn-secondary-cta btn-lg ms-3" })
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

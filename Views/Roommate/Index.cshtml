@@ -1,0 +1,164 @@
+﻿@model PagedList.IPagedList<HSVHousing.Models.RoommatePost>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Tìm bạn ở ghép";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="h2">@ViewBag.Title</h1>
+        <p class="text-secondary">Kết nối với các sinh viên khác để tìm bạn cùng phòng phù hợp.</p>
+        
+        @if (Session["UserID"] != null && (int)Session["RoleID"] == 3)
+        {
+            @Html.ActionLink("Đăng tin của bạn", "Create", "Roommate", null, new { @class="btn btn-primary-cta mt-3"})
+        }
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="listing-list-container">
+        @if (Model.Any())
+        {
+            foreach (var post in Model)
+            {
+                <div class="listing-item">
+                    @* --- PHẦN HEADER CỦA TIN ĐĂNG --- *@
+                    <div class="roommate-post-header">
+                        <a href="#" class="roommate-avatar-link">
+                            <img src="@Url.Content(post.User.AvatarPath ?? "~/assets/img/avatar-default.png")" alt="Avatar của @post.User.FullName" class="roommate-post-avatar">
+                        </a>
+                        <div class="post-meta">
+                            <h4 class="h5 listing-title">@post.Title</h4>
+                            @* SỬA Ở ĐÂY: Hiển thị thời gian đăng cùng dòng *@
+                            <p class="text-note">Đăng bởi: <strong>@post.User.FullName</strong> - @post.CreatedAt.ToString("HH:mm dd/MM/yyyy")</p>
+                        </div>
+                        <div class="post-location">
+                            <span class="text-note">Khu vực</span>
+                            <p class="h6">@(post.DesiredArea ?? "Linh hoạt")</p>
+                        </div>
+                    </div>
+
+                    @* --- PHẦN NỘI DUNG CHÍNH CỦA TIN ĐĂNG --- *@
+                    <div class="roommate-post-body">
+                        <p>@post.Content</p>
+                        <p class="contact-info"><strong>Liên hệ:</strong> @post.ContactInfo</p>
+
+                        @* --- HÀNH ĐỘNG CHO TIN GỐC --- *@
+                        @if (Session["UserID"] != null)
+                        {
+                            <div class="comment-actions">
+                                <a href="#" class="like-btn" data-post-id="@post.PostID">
+                                    <i class="far fa-heart"></i> <span class="like-text">Thích</span>
+                                </a>
+                                <a href="#" class="reply-btn" data-comment-id="post-@post.PostID">Trả lời</a>
+                            </div>
+                        }
+
+                        @if (Session["UserID"] != null && Convert.ToInt32(Session["UserID"]) == post.UserID)
+                        {
+                            <div class="listing-owner-actions">
+                                @Html.ActionLink("Sửa", "Edit", "Roommate", new { id = post.PostID }, new { @class = "btn btn-sm btn-outline-primary" })
+                                @Html.ActionLink("Xóa", "Delete", "Roommate", new { id = post.PostID }, new { @class = "btn btn-sm btn-outline-danger" })
+                            </div>
+                        }
+                    </div>
+
+                    @* --- PHẦN BÌNH LUẬN --- *@
+                    <div class="comment-section">
+                        @* Form trả lời cho tin gốc (ẩn) *@
+                        @if (Session["UserID"] != null)
+                        {
+                            <div class="reply-form-container d-none" id="reply-form-post-@post.PostID">
+                                @using (Html.BeginForm("AddComment", "Roommate", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="postId" value="@post.PostID" />
+                                    <div class="comment-form mt-2">
+                                        <img src="@Url.Content(ViewBag.CurrentUserAvatar ?? "~/assets/img/avatar-default.png")" class="comment-avatar" alt="My Avatar">
+                                        <textarea name="content" class="form-control" rows="1" placeholder="Viết bình luận..."></textarea>
+                                        <button type="submit" class="btn btn-sm btn-primary-cta">Gửi</button>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="comment-list">
+                            @{
+                                var topLevelComments = post.RoommatePostComments.Where(c => c.ParentCommentID == null).OrderBy(c => c.CreatedAt);
+                                var totalComments = post.RoommatePostComments.Count;
+                                var commentsToShow = topLevelComments.Take(2); // Mặc định chỉ hiển thị 2 bình luận gốc
+                            }
+                            @Html.Partial("_RoommateComment", commentsToShow)
+
+                            @if (totalComments > 2)
+                            {
+                                <div class="view-more-comments">
+                                    <a href="#" class="view-more-link" data-post-id="@post.PostID">Xem thêm @(totalComments - 2) bình luận</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center">Chưa có tin tìm bạn ở ghép nào.</p>
+        }
+    </div>
+    
+    @* --- ĐIỀU KHIỂN PHÂN TRANG --- *@
+    <div class="pagination-controls text-center mt-5">
+         @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Logic ẩn/hiện form trả lời
+            $('.reply-btn').on('click', function (e) {
+                e.preventDefault();
+                var commentId = $(this).data('comment-id');
+                $('#reply-form-' + commentId).toggleClass('d-none');
+            });
+
+            // Logic xem thêm bình luận (cần AJAX để hoàn thiện)
+            $('.view-more-link').on('click', function (e) {
+                e.preventDefault();
+                var postId = $(this).data('post-id');
+                alert('Sẽ tải thêm bình luận cho bài đăng #' + postId);
+                $(this).parent().hide();
+            });
+
+            // Logic cho nút Thích
+            $('.like-btn').on('click', function (e) {
+                e.preventDefault();
+                var icon = $(this).find('i');
+                var textSpan = $(this).find('.like-text');
+
+                if (icon.hasClass('far')) {
+                    icon.removeClass('far').addClass('fas');
+                    icon.css('color', 'var(--error-color)');
+                    textSpan.text('Đã thích');
+                } else {
+                    icon.removeClass('fas').addClass('far');
+                    icon.css('color', 'inherit');
+                    textSpan.text('Thích');
+                }
+                
+                // Nơi đây sẽ là code AJAX để gửi thông tin like về server
+            });
+        });
+    </script>
+}

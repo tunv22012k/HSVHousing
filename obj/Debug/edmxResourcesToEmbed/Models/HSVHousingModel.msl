@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="HSVHousingDBModelStoreContainer" CdmEntityContainer="HSVHousingDBEntities">
+    <EntitySetMapping Name="Amenities">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.Amenity">
+        <MappingFragment StoreEntitySet="Amenities">
+          <ScalarProperty Name="AmenityID" ColumnName="AmenityID" />
+          <ScalarProperty Name="AmenityName" ColumnName="AmenityName" />
+          <ScalarProperty Name="IconClass" ColumnName="IconClass" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="BlogPosts">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.BlogPost">
+        <MappingFragment StoreEntitySet="BlogPosts">
+          <ScalarProperty Name="PostID" ColumnName="PostID" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Excerpt" ColumnName="Excerpt" />
+          <ScalarProperty Name="Content" ColumnName="Content" />
+          <ScalarProperty Name="ImagePath" ColumnName="ImagePath" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+          <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Categories">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.Category">
+        <MappingFragment StoreEntitySet="Categories">
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+          <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+          <ScalarProperty Name="IconPath" ColumnName="IconPath" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Districts">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.District">
+        <MappingFragment StoreEntitySet="Districts">
+          <ScalarProperty Name="DistrictID" ColumnName="DistrictID" />
+          <ScalarProperty Name="DistrictName" ColumnName="DistrictName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ListingImages">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.ListingImage">
+        <MappingFragment StoreEntitySet="ListingImages">
+          <ScalarProperty Name="ImageID" ColumnName="ImageID" />
+          <ScalarProperty Name="ListingID" ColumnName="ListingID" />
+          <ScalarProperty Name="ImagePath" ColumnName="ImagePath" />
+          <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Listings">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.Listing">
+        <MappingFragment StoreEntitySet="Listings">
+          <ScalarProperty Name="MaxOccupancy" ColumnName="MaxOccupancy" />
+          <ScalarProperty Name="ListingID" ColumnName="ListingID" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Price" ColumnName="Price" />
+          <ScalarProperty Name="Area" ColumnName="Area" />
+          <ScalarProperty Name="AddressStreet" ColumnName="AddressStreet" />
+          <ScalarProperty Name="WardID" ColumnName="WardID" />
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+          <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+          <ScalarProperty Name="ViewCount" ColumnName="ViewCount" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Reviews">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.Review">
+        <MappingFragment StoreEntitySet="Reviews">
+          <ScalarProperty Name="ReviewID" ColumnName="ReviewID" />
+          <ScalarProperty Name="Rating" ColumnName="Rating" />
+          <ScalarProperty Name="Comment" ColumnName="Comment" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="ListingID" ColumnName="ListingID" />
+          <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Roles">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.Role">
+        <MappingFragment StoreEntitySet="Roles">
+          <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+          <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="RoommatePosts">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.RoommatePost">
+        <MappingFragment StoreEntitySet="RoommatePosts">
+          <ScalarProperty Name="PostID" ColumnName="PostID" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Content" ColumnName="Content" />
+          <ScalarProperty Name="GenderPreference" ColumnName="GenderPreference" />
+          <ScalarProperty Name="DesiredArea" ColumnName="DesiredArea" />
+          <ScalarProperty Name="ContactInfo" ColumnName="ContactInfo" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.User">
+        <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+          <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+          <ScalarProperty Name="AvatarPath" ColumnName="AvatarPath" />
+          <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+          <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Wards">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.Ward">
+        <MappingFragment StoreEntitySet="Wards">
+          <ScalarProperty Name="WardID" ColumnName="WardID" />
+          <ScalarProperty Name="WardName" ColumnName="WardName" />
+          <ScalarProperty Name="DistrictID" ColumnName="DistrictID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <AssociationSetMapping Name="ListingAmenities" TypeName="HSVHousingDBModel.ListingAmenities" StoreEntitySet="ListingAmenities">
+      <EndProperty Name="Amenities">
+        <ScalarProperty Name="AmenityID" ColumnName="AmenityID" />
+      </EndProperty>
+      <EndProperty Name="Listings">
+        <ScalarProperty Name="ListingID" ColumnName="ListingID" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <EntitySetMapping Name="RoommatePostComments">
+      <EntityTypeMapping TypeName="HSVHousingDBModel.RoommatePostComment">
+        <MappingFragment StoreEntitySet="RoommatePostComments">
+          <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+          <ScalarProperty Name="ParentCommentID" ColumnName="ParentCommentID" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="PostID" ColumnName="PostID" />
+          <ScalarProperty Name="Content" ColumnName="Content" />
+          <ScalarProperty Name="CommentID" ColumnName="CommentID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,137 @@
+﻿@model HSVHousing.Models.AuthViewModel
+@{
+    ViewBag.Title = "Đăng nhập / Đăng ký";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-image-section">
+            <img src="~/Content/assets/img/auth-img.png" alt="Illustration of a person working at a desk">
+        </div>
+        <div class="auth-form-section">
+            <div class="tab-buttons mb-4">
+                <button class="tab-button @(ViewBag.ActiveTab == "Register" ? "" : "active")" id="loginTabBtn">ĐĂNG NHẬP</button>
+                <button class="tab-button @(ViewBag.ActiveTab == "Register" ? "active" : "")" id="registerTabBtn">ĐĂNG KÝ</button>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+
+            @* --- FORM ĐĂNG NHẬP --- *@
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "auth-form " + (ViewBag.ActiveTab == "Register" ? "d-none" : ""), id = "loginForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <h2 class="h4 text-center mb-4">Đăng nhập tài khoản</h2>
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Login.Email, new { @class = "form-label text-body-medium" })
+                    @Html.TextBoxFor(m => m.Login.Email, new { @class = "form-control", required = "required", type = "email" })
+                    @Html.ValidationMessageFor(m => m.Login.Email, "", new { @class = "text-danger" })
+                </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Login.Password, new { @class = "form-label text-body-medium" })
+                    @Html.PasswordFor(m => m.Login.Password, new { @class = "form-control", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Login.Password, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="mb-4 text-end">
+                    <a href="#" class="text-note">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary-cta w-100">ĐĂNG NHẬP</button>
+                <p class="text-center text-note mt-3">Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a></p>
+            }
+
+            @* --- FORM ĐĂNG KÝ --- *@
+            @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "auth-form " + (ViewBag.ActiveTab == "Register" ? "" : "d-none"), id = "registerForm", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <h2 class="h4 text-center mb-4">Đăng ký tài khoản</h2>
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Register.FullName, new { @class = "form-label text-body-medium" })
+                    @Html.TextBoxFor(m => m.Register.FullName, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Register.Email, new { @class = "form-label text-body-medium" })
+                    @Html.TextBoxFor(m => m.Register.Email, new { @class = "form-control", required = "required", type = "email" })
+                </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Register.PhoneNumber, new { @class = "form-label text-body-medium" })
+                    @Html.TextBoxFor(m => m.Register.PhoneNumber, new { @class = "form-control", type = "tel" })
+                </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Register.Password, new { @class = "form-label text-body-medium" })
+                    @Html.PasswordFor(m => m.Register.Password, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Register.ConfirmPassword, new { @class = "form-label text-body-medium" })
+                    @Html.PasswordFor(m => m.Register.ConfirmPassword, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="mb-3">
+                    @Html.LabelFor(m => m.Register.AvatarFile, new { @class = "form-label text-body-medium" })
+                    @Html.TextBoxFor(m => m.Register.AvatarFile, new { type = "file", @class = "form-control" })
+                </div>
+
+                <div class="mb-4">
+                    @Html.LabelFor(m => m.Register.RoleID, new { @class = "form-label text-body-medium" })
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.Register.RoleID, 3, new { @class = "form-check-input", id = "regRoleStudent", @checked = "checked" })
+                        <label class="form-check-label text-body-small" for="regRoleStudent">Sinh viên</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButtonFor(m => m.Register.RoleID, 2, new { @class = "form-check-input", id = "regRoleLandlord" })
+                        <label class="form-check-label text-body-small" for="regRoleLandlord">Chủ trọ</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary-cta w-100">ĐĂNG KÝ TÀI KHOẢN</button>
+                <p class="text-center text-note mt-3">Bạn đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập ngay</a></p>
+            }
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerTabBtn = document.getElementById('registerTabBtn');
+            const loginTabBtn = document.getElementById('loginTabBtn');
+            const registerForm = document.getElementById('registerForm');
+            const loginForm = document.getElementById('loginForm');
+            const switchToLoginLink = document.getElementById('switchToLogin');
+            const switchToRegisterLink = document.getElementById('switchToRegister');
+
+            function showRegisterForm() {
+                registerTabBtn.classList.add('active');
+                loginTabBtn.classList.remove('active');
+                registerForm.classList.remove('d-none');
+                loginForm.classList.add('d-none');
+            }
+
+            function showLoginForm() {
+                loginTabBtn.classList.add('active');
+                registerTabBtn.classList.remove('active');
+                loginForm.classList.remove('d-none');
+                registerForm.classList.add('d-none');
+            }
+
+            registerTabBtn.addEventListener('click', showRegisterForm);
+            loginTabBtn.addEventListener('click', showLoginForm);
+            switchToLoginLink.addEventListener('click', (e) => { e.preventDefault(); showLoginForm(); });
+            switchToRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showRegisterForm(); });
+
+            var activeTab = '@ViewBag.ActiveTab';
+            if (activeTab === 'Register') {
+                showRegisterForm();
+            } else {
+                showLoginForm();
+            }
+        });
+    </script>
+}

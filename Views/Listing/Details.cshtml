@@ -1,0 +1,182 @@
+﻿@model HSVHousing.Models.Listing
+@using HSVHousing.Models
+
+@{
+    ViewBag.Title = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="container my-5">
+    <div class="mb-4">
+        <a href="@Url.Action("Index", "Listing")" class="btn btn-secondary-cta">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            @* --- THƯ VIỆN ẢNH --- *@
+            <div class="detail-gallery mb-4">
+                @{
+                    var primaryImage = Model.ListingImages.FirstOrDefault(i => i.IsPrimary)?.ImagePath
+                                    ?? Model.ListingImages.FirstOrDefault()?.ImagePath
+                                    ?? "~/Content/assets/img/placeholder.png";
+                }
+                <img src="@Url.Content(primaryImage)" alt="@Model.Title" class="detail-main-image" id="mainDetailImage">
+
+                @if (Model.ListingImages.Count > 1)
+                {
+                    <div class="detail-thumbnails">
+                        @foreach (var image in Model.ListingImages)
+                        {
+                            <img src="@Url.Content(image.ImagePath)" alt="Thumbnail" class="detail-thumbnail-item" />
+                        }
+                    </div>
+                }
+            </div>
+
+            @* --- MÔ TẢ & TIỆN ÍCH --- *@
+            <div class="detail-section-card mb-4">
+                <h2 class="h4 mb-3">Thông tin chi tiết</h2>
+                <p>@Html.Raw(Model.Description.Replace(Environment.NewLine, "<br />"))</p>
+            </div>
+
+            @if (Model.Amenities != null && Model.Amenities.Any())
+            {
+                <div class="detail-section-card mb-4">
+                    <h3 class="h5 mb-3">Tiện ích</h3>
+                    <div class="amenities-grid">
+                        @foreach (var amenity in Model.Amenities)
+                        {
+                            <div class="amenity-item">
+                                <i class="fas @(amenity.IconClass ?? "fa-check-circle")"></i>
+                                <span>@amenity.AmenityName</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @* --- PHẦN ĐÁNH GIÁ --- *@
+            <div class="detail-section-card mb-4">
+                <h3 class="h5 mb-3">Đánh giá từ sinh viên (@Model.Reviews.Count)</h3>
+
+                @* Hiển thị thông báo thành công hoặc lỗi sau khi gửi đánh giá *@
+                @if (TempData["ReviewSuccess"] != null)
+                {
+                    <div class="alert alert-success">@TempData["ReviewSuccess"]</div>
+                }
+                @if (TempData["ReviewError"] != null)
+                {
+                    <div class="alert alert-danger">@TempData["ReviewError"]</div>
+                }
+
+                @* --- FORM ĐỂ VIẾT ĐÁNH GIÁ MỚI --- *@
+                @if (Session["UserID"] != null && (int)Session["RoleID"] == 3) 
+                {
+                    if ((bool)ViewBag.HasUserReviewed)
+                    {
+                        <div class="alert alert-info">Bạn đã đánh giá phòng trọ này.</div>
+                    }
+                    else
+                    {
+                        Html.RenderPartial("_AddReviewForm", ViewBag.ReviewViewModel as ReviewViewModel);
+                    }
+                }
+                else if (Session["UserID"] == null)
+                {
+                    <p class="text-note">Vui lòng <a href="@Url.Action("Login", "Account", new { returnUrl = Request.Url.PathAndQuery })">đăng nhập</a> với vai trò Sinh viên để gửi đánh giá.</p>
+                }
+
+                <hr class="my-4">
+
+                @* --- DANH SÁCH CÁC ĐÁNH GIÁ ĐÃ CÓ --- *@
+                @if (Model.Reviews != null && Model.Reviews.Any())
+                {
+                    foreach (var review in Model.Reviews)
+                    {
+                        <div class="review-item">
+                            <div class="d-flex justify-content-between">
+                                <strong>@(review.User?.FullName ?? "Người dùng ẩn danh")</strong>
+                                <span class="text-note">@review.CreatedAt.ToString("dd/MM/yyyy")</span>
+                            </div>
+                            <div class="star-rating">
+                                @for (int i = 0; i < review.Rating; i++)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                                @for (int i = review.Rating; i < 5; i++)
+                                {
+                                    <i class="far fa-star"></i>
+                                }
+                            </div>
+                            <p class="mb-0 mt-2">@review.Comment</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Chưa có đánh giá nào cho phòng trọ này.</p>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            @* --- THÔNG TIN CHÍNH & CHỦ TRỌ --- *@
+            <div class="detail-info-card sticky-top" style="top: 100px;">
+                <h1 class="h3 listing-title mb-3">@Model.Title</h1>
+                <p class="listing-price h4">@Model.Price.ToString("N0") đ / tháng</p>
+                <hr />
+                <div class="d-flex justify-content-around text-center my-3">
+                    <div>
+                        <span class="text-note">DIỆN TÍCH</span>
+                        <p class="h5 mb-0">@Model.Area m²</p>
+                    </div>
+                    <div>
+                        <span class="text-note">LƯỢT XEM</span>
+                        <p class="h5 mb-0">@Model.ViewCount</p>
+                    </div>
+                </div>
+                <hr />
+                <p class="listing-location mb-3">
+                    <i class="fas fa-map-marker-alt"></i>
+                    @Model.AddressStreet, @(Model.Ward?.WardName), @(Model.Ward?.District?.DistrictName)
+                </p>
+
+                @if (Model.User != null)
+                {
+                    <div class="landlord-info-box">
+                        <p class="text-note mb-1">Được đăng bởi</p>
+                        <strong>@Model.User.FullName</strong>
+                        <p>Điện thoại: @(Model.User.PhoneNumber ?? "Chưa cập nhật")</p>
+                    </div>
+                    <a href="tel:@Model.User.PhoneNumber" class="btn btn-primary-cta w-100 mt-3">
+                        <i class="fas fa-phone-alt me-2"></i> GỌI NGAY
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Logic cho thư viện ảnh
+            const mainImage = document.getElementById('mainDetailImage');
+            const thumbnails = document.querySelectorAll('.detail-thumbnail-item');
+
+            if (mainImage && thumbnails) {
+                thumbnails.forEach(thumbnail => {
+                    thumbnail.addEventListener('click', function () {
+                        mainImage.src = this.src;
+                        thumbnails.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                });
+                if (thumbnails.length > 0) {
+                    thumbnails[0].classList.add('active');
+                }
+            }
+        });
+    </script>
+}

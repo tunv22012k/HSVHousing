@@ -1,0 +1,38 @@
+﻿@model HSVHousing.Models.BlogPost
+
+@{
+    ViewBag.Title = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <article class="blog-post-detail">
+                <header class="mb-4">
+                    <h1 class="h2 mb-3">@Model.Title</h1>
+                    <div class="text-note">
+                        <span>Đăng bởi: <strong>@(Model.User?.FullName ?? "Admin")</strong></span>
+                        <span class="mx-2">|</span>
+                        <span>Ngày đăng: @Model.CreatedAt.ToString("dd/MM/yyyy")</span>
+                    </div>
+                </header>
+
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <img src="@Url.Content(Model.ImagePath)" alt="@Model.Title" class="img-fluid rounded mb-4">
+                }
+
+                <div class="blog-post-content">
+                    @Html.Raw(Model.Content.Replace(Environment.NewLine, "<br />"))
+                </div>
+
+                <hr class="my-5">
+
+                <a href="@Url.Action("Index", "Blog")" class="btn btn-secondary-cta">
+                    <i class="fas fa-arrow-left me-2"></i> Quay lại
+                </a>
+            </article>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,33 @@
+﻿@model HSVHousing.Models.ReviewViewModel
+
+@using (Html.BeginForm("AddReview", "Listing", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @* Đây là trường quan trọng nhất, đảm bảo ListingID được gửi đi chính xác *@
+    @Html.HiddenFor(m => m.ListingID)
+
+    <div class="review-form">
+        <h4 class="h6">Gửi đánh giá của bạn</h4>
+        <div class="mb-2">
+            @Html.LabelFor(m => m.Rating, new { @class = "form-label text-body-medium" })
+            <div class="star-rating-input">
+                @for (int i = 5; i >= 1; i--)
+                {
+                    @Html.RadioButtonFor(m => m.Rating, i, new { id = $"star{i}", @class = "d-none" })
+                    <label for="star@(i)"><i class="fas fa-star"></i></label>
+                }
+            </div>
+            @Html.ValidationMessageFor(m => m.Rating, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Comment, new { @class = "form-label text-body-medium" })
+            @Html.TextAreaFor(m => m.Comment, new { @class = "form-control", rows = "4", placeholder = "Chia sẻ cảm nhận của bạn..." })
+            @Html.ValidationMessageFor(m => m.Comment, "", new { @class = "text-danger" })
+        </div>
+
+        <button type="submit" class="btn btn-primary-cta">Gửi đánh giá</button>
+    </div>
+}

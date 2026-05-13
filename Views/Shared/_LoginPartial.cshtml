@@ -1,0 +1,23 @@
+﻿@* Kiểm tra xem Session["UserID"] có tồn tại không để xác định người dùng đã đăng nhập hay chưa *@
+@if (Session["UserID"] != null)
+{
+    @* Nếu đã đăng nhập, hiển thị lời chào và nút Đăng xuất *@
+    <ul class="nav align-items-center">
+        <li class="nav-item">
+            <a href="@Url.Action("Index", "Manage")" title="Quản lý tài khoản" class="nav-link">
+                Chào, @Session["FullName"]!
+            </a>
+        </li>
+        <li class="nav-item">
+            @* Tạo một link đơn giản đến Action "Logout" trong AccountController *@
+            @Html.ActionLink("Đăng xuất", "Logout", "Account", null, new { @class = "nav-link" })
+        </li>
+    </ul>
+}
+else
+{
+    @* Nếu chưa đăng nhập, chỉ hiển thị nút Đăng nhập *@
+    <div>
+        @Html.ActionLink("Đăng nhập", "Login", "Account", routeValues: null, htmlAttributes: new { @class = "btn btn-primary-cta" })
+    </div>
+}

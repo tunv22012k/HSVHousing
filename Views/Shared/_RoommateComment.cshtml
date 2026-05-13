@@ -1,0 +1,52 @@
+﻿@model IEnumerable<HSVHousing.Models.RoommatePostComment>
+
+@foreach (var comment in Model)
+{
+    <div class="comment-item" id="comment-@comment.CommentID">
+        <img src="@Url.Content(comment.User.AvatarPath ?? "~/Content/assets/img/avatar-default.png")" class="comment-avatar" alt="Avatar">
+        <div class="comment-content-wrapper">
+            <div class="comment-content">
+                <strong>@(comment.User.FullName ?? "Người dùng")</strong>
+                <p>@comment.Content</p>
+            </div>
+
+            @if (Session["UserID"] != null)
+            {
+                <div class="comment-actions">
+                    <a href="#" class="like-btn" data-comment-id="@comment.CommentID">
+                        <i class="far fa-heart"></i> <span class="like-text">Thích</span>
+                    </a>
+                    <a href="#" class="reply-btn" data-comment-id="@comment.CommentID">Trả lời</a>
+                    <span class="text-note">@comment.CreatedAt.ToString("HH:mm dd/MM/yyyy")</span>
+                </div>
+
+                <div class="reply-form-container d-none" id="reply-form-@comment.CommentID">
+                    @using (Html.BeginForm("AddComment", "Roommate", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="postId" value="@comment.PostID" />
+                        <input type="hidden" name="parentCommentId" value="@comment.CommentID" />
+                        <div class="comment-form mt-2">
+                            <img src="@Url.Content(ViewBag.CurrentUserAvatar ?? "~/Content/assets/img/avatar-default.png")" class="comment-avatar" alt="My Avatar">
+                            <textarea name="content" class="form-control" rows="1" placeholder="Viết trả lời..."></textarea>
+                            <button type="submit" class="btn btn-sm btn-primary-cta">Gửi</button>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="comment-actions">
+                    <span class="text-note">@comment.CreatedAt.ToString("HH:mm dd/MM/yyyy")</span>
+                </div>
+            }
+
+            @if (comment.RoommatePostComments1.Any())
+            {
+                <div class="comment-replies">
+                    @Html.Partial("_RoommateComment", comment.RoommatePostComments1.OrderBy(r => r.CreatedAt))
+                </div>
+            }
+        </div>
+    </div>
+}

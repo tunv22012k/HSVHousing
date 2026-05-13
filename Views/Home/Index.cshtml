@@ -1,0 +1,209 @@
+﻿@model HSVHousing.Models.HomeViewModel
+@using HSVHousing.Models
+@using PagedList.Mvc;
+@using PagedList;
+
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main>
+    <section class="hero-section text-center py-5">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1 class="text-white mb-4">NGÂN HÀNG NHÀ TRỌ CHO SINH VIÊN HOU</h1>
+            <p class="text-white text-body-large mb-5">
+                Hệ thống tìm phòng trọ uy tín, nhanh chóng và tiện lợi dành
+                cho sinh viên Trường Đại học Mở Hà Nội.
+            </p>
+            <div class="search-panel-wrapper">
+                @using (Html.BeginForm("Index", "Listing", FormMethod.Get, new { @class = "search-bar-full-width" }))
+                {
+                    @Html.DropDownList("districtId", ViewBag.Districts as SelectList, "Chọn Quận/Huyện", new { @class = "form-select custom-select", id = "districtSelect" })
+
+                    <select class="form-select custom-select" id="wardSelect" name="wardId">
+                        <option value="">Chọn Phường/Xã</option>
+                    </select>
+
+                    <select class="form-select custom-select" name="priceRange">
+                        <option value="">Chọn Khoảng giá</option>
+                        <option value="1-2" @(ViewBag.SelectedPrice == "1-2" ? "selected" : "")>Dưới 2 triệu</option>
+                        <option value="2-3" @(ViewBag.SelectedPrice == "2-3" ? "selected" : "")>2 - 3 triệu</option>
+                        <option value="3-5" @(ViewBag.SelectedPrice == "3-5" ? "selected" : "")>3 - 5 triệu</option>
+                        <option value="5+" @(ViewBag.SelectedPrice == "5+" ? "selected" : "")>Trên 5 triệu</option>
+                    </select>
+
+                    <select class="form-select custom-select" name="areaRange">
+                        <option value="">Diện tích</option>
+                        <option value="15-20" @(ViewBag.SelectedArea == "15-20" ? "selected" : "")>15 - 20 m²</option>
+                        <option value="20-25" @(ViewBag.SelectedArea == "20-25" ? "selected" : "")>20 - 25 m²</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary-cta search-btn-full-width">
+                        <i class="fas fa-search me-2"></i>TÌM KIẾM
+                    </button>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="container my-5">
+        <h2 class="h3 mb-4 section-title text-center">Loại nhà trọ</h2>
+        <div class="category-grid">
+            @if (Model.RoomCategories != null && Model.RoomCategories.Any())
+            {
+                foreach (var category in Model.RoomCategories)
+                {
+                    <div class="category-item">
+                        <a href="@Url.Action("Index", "Listing", new { categoryId = category.CategoryID })" title="@category.CategoryName">
+                            <img src="@Url.Content($"~/Content/assets/img/cat-{category.CategoryID}.jpg")" alt="@category.CategoryName">
+                            <div class="category-card-overlay">
+                                <div class="item-title flex">
+                                    <div class="box-icon">
+                                        <img src="@Url.Content(category.IconPath ?? "~/Content/assets/img/icon-default.png")" alt="Icon @category.CategoryName">
+                                    </div>
+                                    <div class="box-text">
+                                        <h3 class="title">@category.CategoryName</h3>
+                                        @{
+                                            var count = Model.CategoryCounts.ContainsKey(category.CategoryName) ? Model.CategoryCounts[category.CategoryName] : 0;
+                                        }
+                                        <p class="result">(@count Kết quả)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <section class="container my-5">
+        <h2 class="h3 mb-4 section-title text-center">Phòng trọ mới nhất</h2>
+        <div class="listing-grid">
+            @if (Model.NewestListings != null && Model.NewestListings.Any())
+            {
+                foreach (var item in Model.NewestListings)
+                {
+                    <div class="listing-card">
+                        <a href="@Url.Action("Details", "Listing", new { id = item.ListingID })" class="listing-card-link">
+                            <div class="listing-card-img-wrapper">
+                                @{
+                                    var primaryImage = item.ListingImages.FirstOrDefault(i => i.IsPrimary)?.ImagePath
+                                                    ?? item.ListingImages.FirstOrDefault()?.ImagePath
+                                                    ?? "~/Content/assets/img/placeholder.png";
+                                }
+                                <img src="@Url.Content(primaryImage)" alt="@item.Title">
+                                <div class="listing-card-tags">
+                                    @if (item.Status == 1)
+                                    {
+                                        <span class="tag tag-available">Còn phòng</span> }
+                                    else if (item.Status == 3)
+                                    {
+                                        <span class="tag tag-rented">Đã cho thuê</span>}
+                                </div>
+                            </div>
+                            <div class="listing-card-body">
+                                <h4 class="h5 listing-title">@item.Title</h4>
+                                <div class="listing-amenities">
+                                    @if (item.MaxOccupancy.HasValue && item.MaxOccupancy > 0)
+                                    {
+                                        <span><i class="fas fa-user-friends"></i> @item.MaxOccupancy Người</span>}
+
+                                    @if (item.Amenities != null && item.Amenities.Any())
+                                    {
+                                        foreach (var amenity in item.Amenities.Take(5))
+                                        {
+                                            <span><i class="fas @(amenity.IconClass ?? "fa-check-circle")"></i> @amenity.AmenityName</span>}
+                                    }
+                                </div>
+                                <p class="listing-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    @item.AddressStreet,
+                                    @(item.Ward?.WardName),
+                                    @(item.Ward?.District?.DistrictName)
+                                </p>
+                            </div>
+                            <div class="listing-card-footer">
+                                <span class="listing-price">Giá: @item.Price.ToString("N0") đ</span>
+                                <span class="btn btn-detail-red">CHI TIẾT</span>
+                            </div>
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center">Chưa có tin đăng nào.</p>
+            }
+        </div>
+        <div class="text-center mt-5">
+            <a href="@Url.Action("Index", "Listing")" class="btn btn-primary-outline btn-lg">XEM THÊM</a>
+        </div>
+    </section>
+
+    <section class="container my-5 py-3">
+        <h2 class="h3 mb-4 section-title text-center">Bài viết mới nhất</h2>
+        <div class="blog-grid">
+            @if (Model.NewestBlogPosts != null && Model.NewestBlogPosts.Any())
+            {
+                foreach (var post in Model.NewestBlogPosts)
+                {
+                    <div class="blog-card">
+                        <a href="@Url.Action("Details", "Blog", new { id = post.PostID })" class="blog-card-link">
+                            <img src="@Url.Content(post.ImagePath ?? "~/Content/assets/img/blog-placeholder.png")" alt="@post.Title" class="blog-card-img">
+                            <div class="blog-card-body">
+                                <span class="blog-date">@post.CreatedAt.ToString("dd/MM/yyyy")</span>
+                                <h5 class="blog-title">@post.Title</h5>
+                                <p class="blog-excerpt">@post.Excerpt</p>
+                                <span class="read-more">Đọc thêm <i class="fas fa-arrow-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center">Chưa có bài viết nào.</p>
+            }
+        </div>
+        <div class="text-center mt-5">
+            <a href="@Url.Action("Index", "Blog")" class="btn btn-primary-outline btn-lg">XEM THÊM</a>
+        </div>
+    </section>
+</main>
+
+@section Scripts {
+    <script>
+    $(document).ready(function () {
+        $('#districtSelect').change(function () {
+            var districtId = $(this).val();
+            var wardSelect = $('#wardSelect');
+
+            wardSelect.empty().append('<option value="">Chọn Phường/Xã</option>');
+            wardSelect.prop('disabled', true);
+
+            if (districtId) {
+                wardSelect.empty().append('<option value="">Đang tải...</option>');
+                $.ajax({
+                    url: '@Url.Action("GetWardsByDistrict", "Home")',
+                    type: 'GET',
+                    data: { districtId: districtId },
+                    success: function (data) {
+                        wardSelect.empty().append('<option value="">Chọn Phường/Xã</option>');
+                        $.each(data, function (i, ward) {
+                            wardSelect.append($('<option></option>').val(ward.Value).html(ward.Text));
+                        });
+                        wardSelect.prop('disabled', false);
+                    },
+                    error: function () {
+                        alert('Lỗi khi tải danh sách phường/xã.');
+                        wardSelect.prop('disabled', false);
+                    }
+                });
+            }
+        });
+    });
+    </script>
+}

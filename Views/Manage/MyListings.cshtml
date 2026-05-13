@@ -1,0 +1,62 @@
+﻿@model IEnumerable<HSVHousing.Models.Listing>
+
+@{
+    ViewBag.Title = "Quản lý Tin đăng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@ViewBag.Title</h2>
+        @Html.ActionLink("Đăng tin mới", "CreateListing", "Manage", null, new { @class = "btn btn-primary-cta" })
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Loại tin</th>
+                    <th>Giá</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày đăng</th>
+                    <th style="width: 15%;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("Details", "Listing", new { id = item.ListingID })" target="_blank">
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </a>
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.Category.CategoryName)</td>
+                        <td>@item.Price.ToString("N0") đ</td>
+                        <td>
+                            @if (item.Status == 0)
+                            {<span class="badge bg-warning text-dark">Chờ duyệt</span> }
+                            else if (item.Status == 1)
+                            { <span class="badge bg-success">Đã duyệt</span> }
+                            else if (item.Status == 2)
+                            { <span class="badge bg-danger">Bị từ chối</span> }
+                            else if (item.Status == 3)
+                            { <span class="badge bg-secondary">Đã cho thuê</span>}
+                        </td>
+                        <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td class="text-center">
+                            @Html.ActionLink("Sửa", "EditListing", new { id = item.ListingID }, new { @class = "btn btn-sm btn-outline-primary" })
+                            @Html.ActionLink("Xóa", "DeleteListing", new { id = item.ListingID }, new { @class = "btn btn-sm btn-outline-danger" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

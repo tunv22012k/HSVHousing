@@ -1,0 +1,52 @@
+﻿@model PagedList.IPagedList<HSVHousing.Models.BlogPost>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Kinh nghiệm & Tin tức";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="h2">@ViewBag.Title</h1>
+        <p class="text-secondary">Cập nhật những thông tin và kinh nghiệm hữu ích cho sinh viên khi thuê trọ.</p>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="blog-grid">
+            @foreach (var post in Model)
+            {
+                <div class="blog-card">
+                    <a href="@Url.Action("Details", "Blog", new { id = post.PostID })" class="blog-card-link">
+                        <img src="@Url.Content(post.ImagePath ?? "~/assets/img/blog-placeholder.png")" alt="@post.Title" class="blog-card-img">
+                        <div class="blog-card-body">
+                            <span class="blog-date">@post.CreatedAt.ToString("dd/MM/yyyy")</span>
+                            <h5 class="blog-title">@post.Title</h5>
+                            <p class="blog-excerpt">@post.Excerpt</p>
+                            <span class="read-more">Đọc thêm <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="pagination-controls text-center mt-5">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+                new PagedListRenderOptions
+                {
+                    ContainerDivClasses = new[] { "d-flex", "justify-content-center" },
+                    LiElementClasses = new[] { "page-item" },
+                    UlElementClasses = new[] { "pagination" },
+                    LinkToPreviousPageFormat = "‹",
+                    LinkToNextPageFormat = "›",
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Never,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Never
+                })
+        </div>
+    }
+    else
+    {
+        <p class="text-center">Chưa có bài viết nào.</p>
+    }
+</main>

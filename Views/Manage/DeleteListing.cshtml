@@ -1,0 +1,32 @@
+﻿@model HSVHousing.Models.Listing
+
+@{
+    ViewBag.Title = "Xác nhận Xóa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5">
+    <h2>@ViewBag.Title Tin Đăng</h2>
+    <h3>Bạn có chắc chắn muốn xóa tin đăng này không?</h3>
+    <hr />
+
+    <div class="alert alert-danger">
+        <h4>@Html.DisplayFor(model => model.Title)</h4>
+        <dl>
+            <dt>Địa chỉ:</dt>
+            <dd>@Html.DisplayFor(model => model.AddressStreet), @Model.Ward.WardName, @Model.Ward.District.DistrictName</dd>
+
+            <dt>Giá:</dt>
+            <dd>@Model.Price.ToString("N0") đ</dd>
+        </dl>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-actions no-color">
+            <input type="submit" value="Xác nhận Xóa" class="btn btn-danger" /> |
+            @Html.ActionLink("Quay lại danh sách", "MyListings")
+        </div>
+    }
+</div>

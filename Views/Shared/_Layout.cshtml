@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - HSV Housing</title>
+    @* --- Liên kết đến các thư viện CSS từ CDN --- *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="@Url.Content("~/Content/reset.css")">
+    <link rel="stylesheet" href="@Url.Content("~/Content/style.css")">
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                <img src="@Url.Content("~/Content/assets/img/logo.png")" alt="HSV Housing Logo">
+            </a>
+
+            <nav class="main-nav">
+                <ul class="nav align-items-center">
+                    <li class="nav-item">@Html.ActionLink("Trang chủ", "Index", "Home", null, new { @class = "nav-link" })</li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCategory" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Loại nhà trọ
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownCategory">
+                            @if (ViewBag.GlobalCategories != null)
+                            {
+                                foreach (var category in ViewBag.GlobalCategories)
+                                {
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("Index", "Listing", new { categoryId = category.CategoryID })">
+                                            @category.CategoryName
+                                        </a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                    <li class="nav-item">@Html.ActionLink("Tìm trọ", "Index", "Listing", null, new { @class = "nav-link" })</li>
+                    <li class="nav-item">@Html.ActionLink("Tìm ở ghép", "Index", "Roommate", null, new { @class = "nav-link" })</li>
+                </ul>
+            </nav>
+
+            <div>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        @RenderBody()
+    </div>
+
+    <footer class="main-footer">
+        <div class="container footer-top-section">
+            <div class="footer-col footer-branding">
+                <a href="#" class="footer-logo-link">
+                    <img src="@Url.Content("~/Content/assets/img/logo.png")" alt="Logo HSV Housing" class="footer-logo-img">
+
+                </a>
+            </div>
+
+            <div class="footer-col footer-info-social-wrapper">
+                <div class="footer-info">
+                    <h4 class="footer-heading">TRƯỜNG ĐẠI HỌC MỞ HÀ NỘI</h4>
+                    <p class="text-white">Địa chỉ: Nhà B101, phố Nguyễn Hiền, phường Bạch Mai, TP Hà Nội</p>
+                    <p class="text-white">Điện thoại: 024.38682321</p>
+                    <p class="text-white">Email: mhn@hou.edu.vn</p>
+                </div>
+
+                <div class="footer-social">
+                    <h4 class="footer-heading">MẠNG XÃ HỘI</h4>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom-section">
+            <div class="container">
+                <hr class="footer-hr">
+                <p class="text-white text-note text-center">&copy; @DateTime.Now.Year Bản quyền thuộc về Trường Đại học Mở Hà Nội</p>
+            </div>
+        </div>
+    </footer>
+
+    @* --- Liên kết đến các thư viện JS từ CDN --- *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <script src="@Url.Content("~/Scripts/main.js")"></script>
+
+    @* Cho phép các trang con nạp các script riêng *@
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
