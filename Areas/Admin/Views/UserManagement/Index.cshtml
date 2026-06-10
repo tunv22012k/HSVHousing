@@ -1,0 +1,67 @@
+﻿@model IEnumerable<HSVHousing.Models.User>
+
+@{
+    ViewBag.Title = "Quản lý người dùng";
+}
+
+<div class="container-fluid mt-3">
+    <h2 class="mb-4">Quản lý người dùng</h2>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.UserID</td>
+                                <td>@item.FullName</td>
+                                <td>@item.Email</td>
+                                <td>
+                                    @if (item.RoleID == 1) { <span class="badge bg-danger">Admin</span> }
+                                    else if (item.RoleID == 2) { <span class="badge bg-primary">Chủ trọ</span> }
+                                    else { <span class="badge bg-secondary">Sinh viên</span> }
+                                </td>
+                                <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Đã khóa</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.UserID != Convert.ToInt32(Session["UserID"]))
+                                    {
+                                        using (Html.BeginForm("ToggleStatus", "UserManagement", new { id = item.UserID }, FormMethod.Post, new { style = "display:inline;" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")" onclick="return confirm('Bạn có chắc chắn muốn @(item.IsActive ? "khóa" : "mở khóa") tài khoản này?');">
+                                                @(item.IsActive ? "Khóa" : "Mở khóa")
+                                            </button>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

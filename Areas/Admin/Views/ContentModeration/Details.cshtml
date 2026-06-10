@@ -1,0 +1,140 @@
+﻿@model HSVHousing.Models.Listing
+
+@{
+    ViewBag.Title = "Chi tiết tin đăng";
+}
+
+<div class="container-fluid mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Chi tiết tin đăng #@Model.ListingID</h2>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Quay lại danh sách</a>
+    </div>
+
+    <div class="row">
+        <!-- Thông tin phòng -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h4 class="card-title text-primary">@Model.Title</h4>
+                    <p class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> @Model.AddressStreet, @Model.Ward.WardName, @Model.Ward.District.DistrictName</p>
+                    
+                    <div class="d-flex gap-4 mb-3">
+                        <div><strong>Giá:</strong> <span class="text-danger fw-bold">@Model.Price.ToString("N0") VNĐ/tháng</span></div>
+                        <div><strong>Diện tích:</strong> @Model.Area m²</div>
+                        <div><strong>Danh mục:</strong> @Model.Category.CategoryName</div>
+                    </div>
+
+                    <hr />
+                    <h5>Mô tả chi tiết</h5>
+                    <div class="p-3 bg-light rounded" style="white-space: pre-wrap;">@Model.Description</div>
+                    
+                    <hr />
+                    <h5>Tiện ích</h5>
+                    <div>
+                        @if (Model.Amenities.Any())
+                        {
+                            foreach (var am in Model.Amenities)
+                            {
+                                <span class="badge bg-secondary me-2 mb-2 p-2"><i class="bi bi-check-circle"></i> @am.AmenityName</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Không có thông tin tiện ích.</span>
+                        }
+                    </div>
+
+                    <hr />
+                    <h5>Hình ảnh</h5>
+                    <div class="row">
+                        @if (Model.ListingImages.Any())
+                        {
+                            foreach (var img in Model.ListingImages)
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <img src="@Url.Content(img.ImagePath)" class="img-fluid rounded" alt="Listing Image" style="height: 150px; width: 100%; object-fit: cover;" />
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">Chưa có hình ảnh nào được tải lên.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin người đăng & Hành động -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Thông tin người đăng</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Họ tên:</strong> @Model.User.FullName</p>
+                    <p><strong>Email:</strong> @Model.User.Email</p>
+                    <p><strong>SĐT:</strong> @Model.User.PhoneNumber</p>
+                    <p><strong>Ngày đăng:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-@(Model.Status == 0 ? "warning" : Model.Status == 1 ? "success" : "danger")">
+                <div class="card-header text-white bg-@(Model.Status == 0 ? "warning text-dark" : Model.Status == 1 ? "success" : "danger")">
+                    <h5 class="mb-0">Hành động kiểm duyệt</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p>Trạng thái hiện tại: 
+                        <strong>
+                            @(Model.Status == 0 ? "Đang chờ duyệt" : Model.Status == 1 ? "Đã duyệt" : "Bị từ chối")
+                        </strong>
+                    </p>
+                    
+                    @if (Model.Status == 0)
+                    {
+                        <div class="d-grid gap-2">
+                            @using (Html.BeginForm("Approve", "ContentModeration", new { id = Model.ListingID }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success w-100" onclick="return confirm('Bạn xác nhận duyệt tin này để hiển thị trên trang chủ?');">
+                                    <i class="bi bi-check-circle"></i> Duyệt tin này
+                                </button>
+                            }
+                            @using (Html.BeginForm("Reject", "ContentModeration", new { id = Model.ListingID }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Bạn xác nhận từ chối và ẩn tin này?');">
+                                    <i class="bi bi-x-circle"></i> Từ chối tin
+                                </button>
+                            }
+                        </div>
+                    }
+                    else if (Model.Status == 1)
+                    {
+                        <div class="d-grid gap-2">
+                            @using (Html.BeginForm("Reject", "ContentModeration", new { id = Model.ListingID }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Tin đang hiển thị. Bạn có chắc chắn muốn ẩn nó đi?');">
+                                    <i class="bi bi-x-circle"></i> Khóa / Từ chối tin
+                                </button>
+                            }
+                        </div>
+                    }
+                    else if (Model.Status == 2)
+                    {
+                        <div class="d-grid gap-2">
+                            @using (Html.BeginForm("Approve", "ContentModeration", new { id = Model.ListingID }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success w-100" onclick="return confirm('Bạn xác nhận duyệt lại tin này?');">
+                                    <i class="bi bi-check-circle"></i> Duyệt lại tin
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

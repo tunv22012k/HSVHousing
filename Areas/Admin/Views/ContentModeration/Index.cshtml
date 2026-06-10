@@ -1,0 +1,71 @@
+﻿@model IEnumerable<HSVHousing.Models.Listing>
+
+@{
+    ViewBag.Title = "Kiểm duyệt tin đăng";
+    int currentStatus = ViewBag.CurrentStatus != null ? (int)ViewBag.CurrentStatus : 0;
+}
+
+<div class="container-fluid mt-3">
+    <h2 class="mb-4">Kiểm duyệt tin đăng</h2>
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link @(currentStatus == 0 ? "active" : "")" href="@Url.Action("Index", new { status = 0 })">Chờ duyệt</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(currentStatus == 1 ? "active text-success" : "text-success")" href="@Url.Action("Index", new { status = 1 })">Đã duyệt</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(currentStatus == 2 ? "active text-danger" : "text-danger")" href="@Url.Action("Index", new { status = 2 })">Bị từ chối</a>
+        </li>
+    </ul>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã tin</th>
+                            <th>Hình đại diện</th>
+                            <th>Tiêu đề</th>
+                            <th>Chủ trọ</th>
+                            <th>Ngày đăng</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Không có tin đăng nào trong trạng thái này.</td>
+                            </tr>
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>#@item.ListingID</td>
+                                <td>
+                                    @{
+                                        var firstImage = item.ListingImages.FirstOrDefault();
+                                        string imgUrl = firstImage != null ? Url.Content(firstImage.ImagePath) : "https://via.placeholder.com/80x60?text=No+Image";
+                                    }
+                                    <img src="@imgUrl" alt="Thumbnail" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px;" />
+                                </td>
+                                <td>
+                                    <strong>@item.Title</strong><br />
+                                    <small class="text-muted">@item.Price.ToString("N0") VNĐ/tháng - @item.Area m²</small>
+                                </td>
+                                <td>@item.User.FullName</td>
+                                <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = item.ListingID })" class="btn btn-sm btn-outline-info">Xem chi tiết & Duyệt</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
